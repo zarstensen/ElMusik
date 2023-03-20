@@ -9,7 +9,7 @@ void setup() {
   
   int* pins = new int[3]{A0, A1, A2};
 
-  input = ADInput(3, pins, 6, 1);
+  input = ADInput(3, pins, 6, 1, 0.01, 10);
   input.setPressedCallback(key);
 }
 

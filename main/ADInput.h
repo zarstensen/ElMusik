@@ -12,12 +12,14 @@ public:
 	/// @param analog_pins
 	/// takes ownership
 	/// @param analog_resolution 
-	ADInput(int analog_count, int* analog_pins, int analog_resolution, int resolution_offset)
+	ADInput(int analog_count, int* analog_pins, int analog_resolution, int resolution_offset, double repeat_margin, uint8_t repeat_count)
 	{
 		m_analog_pins = analog_pins;
 		m_analog_count = analog_count;
     m_analog_resolution = analog_resolution;
-		
+		m_repeat_margin = repeat_margin;
+    m_repeat_count = repeat_count;
+
 		m_reading_base = 0.5;
 
 		for (int i = 0; i < analog_resolution + resolution_offset; i++)
@@ -37,6 +39,12 @@ public:
     memset(m_down, m_bitmap_length, 0);
     memset(m_prev_down, m_bitmap_length, 0);
     memset(m_toggled, m_bitmap_length, 0);
+
+    m_prev_voltages = new double[m_analog_count];
+    m_stable_iterations = new uint8_t[m_analog_count];
+
+    memset(m_prev_voltages, m_analog_count * sizeof(double), 0);
+    memset(m_stable_iterations, m_analog_count * sizeof(uint8_t), 0);
 	}
 
 	poll()
@@ -44,7 +52,7 @@ public:
     memcpy(m_prev_down, m_down, m_bitmap_length);
 
     for(int i = 0; i < m_analog_count; i++)
-      pollPin(m_analog_pins[i], m_analog_resolution * i);
+      pollPin(i, m_analog_resolution * i);
 
     for(int i = 0; i < m_analog_resolution * m_analog_count; i++)
     {
@@ -92,14 +100,32 @@ protected:
 		return round(v * 1 / base) * base;
 	}
 
-	void pollPin(int pin, int bitmap_offset)
+	void pollPin(int pin_indx, int bitmap_offset)
 	{
+
+    
+
     // update down state
 
     // printBitmap(m_prev_down);
 
     // Serial.println(analogRead(pin) / 1024.);
-		double target_val = roundToNearest((analogRead(pin) / 1024. - 0.5) * 2, m_reading_base);
+		double target_val = roundToNearest((analogRead(m_analog_pins[pin_indx]) / 1024. - 0.5) * 2, m_reading_base);
+
+    // only poll down state, if the target val has been stable for x iterations
+
+    if(abs(target_val - m_prev_voltages[pin_indx]) < m_repeat_margin)
+      m_stable_iterations[pin_indx]++;
+    else
+    {
+      m_stable_iterations[pin_indx] = 0;
+      m_prev_voltages[pin_indx] = target_val;
+    }
+
+    if(m_stable_iterations[pin_indx] >= m_repeat_count)
+      m_stable_iterations[pin_indx] = m_repeat_count;
+    else
+      return;
 
     // Serial.println(target_val);
 
@@ -172,4 +198,6 @@ protected:
 	byte* m_toggled;
 	byte* m_down;
 	byte* m_prev_down;
+  double* m_prev_voltages;
+  uint8_t* m_stable_iterations;
 };
