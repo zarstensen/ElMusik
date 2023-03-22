@@ -11,6 +11,15 @@ void setup() {
 
   input = ADInput(3, pins, 6, 1, 0.01, 10);
   input.setPressedCallback(key);
+
+  pinMode(5, OUTPUT);
+  TCCR0B &= 0b00000000 | 0b00000001;
+
+}
+
+void setTone(uint8_t generator, float voltage)
+{
+  analogWrite(generator, voltage/5.f*255.f);
 }
 
 double roundToNearest(double v, double base)
@@ -24,6 +33,11 @@ void key(int device, bool pressed)
   Serial.print(device);
   Serial.println(pressed ? " DOWN" : " UP");
   Serial.println();
+
+  if(pressed)
+    setTone(5, ((12 - device) / 12.) * 5);
+  else
+    setTone(5, 5);
 }
 
 void loop() {
