@@ -1,11 +1,19 @@
 #include "ADInput.h"
+#include "SortedList.h"
 
 ADInput input;
+
+int compareInt(const int& target, const int& other)
+{
+    return target - other;
+}
 
 void setup() {
   Serial.begin(9600);
 
   delay(1000);
+
+  Serial.println("BEGIN");
   
   int* pins = new int[3]{A0, A1, A2};
 
@@ -14,6 +22,22 @@ void setup() {
 
   pinMode(5, OUTPUT);
   TCCR0B &= 0b00000000 | 0b00000001;
+
+  SortedList<int> l = SortedList<int>(0, compareInt);
+
+  l.add(25);
+  l.add(500);
+  l.add(10);
+  l.add(-1);
+
+  Serial.println(l.size());
+
+  for (int i = 0; i < l.size(); i++)
+  {
+    Serial.print(i);
+    Serial.println(':');
+    Serial.println(l.data()[i]);
+  }
 
 }
 

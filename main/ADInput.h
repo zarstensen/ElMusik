@@ -209,11 +209,13 @@ protected:
 		delete[] buffer;
 	}
 
+	// sets a bit, to value, in the given bitmap, at the given bit index.
 	void setBitmap(byte* bitmap, int indx, bool value)
 	{
 		bitmap[indx / 8] = (bitmap[indx / 8] & ~(1UL << indx % 8)) | (value << indx % 8);
 	}
 
+	// retrives a bit state, at the given bit index.
 	bool getBitmap(byte* bitmap, int indx)
 	{
 		return ((bitmap[indx / 8]) >> (indx % 8)) & 1UL;
