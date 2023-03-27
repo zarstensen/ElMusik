@@ -1,9 +1,6 @@
 #include "ADInput.h"
-<<<<<<< Updated upstream
 #include "SortedList.h"
-=======
 #include "MusicPlayer.h"
->>>>>>> Stashed changes
 
 struct RNote
 {
@@ -13,12 +10,6 @@ struct RNote
 
 ADInput input;
 MusicPlayer player;
-
-
-long compareInt(const int& target, const int& other)
-{
-    return target - other;
-}
 
 long compareRNote(const RNote& target, const RNote& other)
 {
@@ -33,14 +24,11 @@ void setup() {
   Serial.begin(9600);
 
   delay(1000);
-<<<<<<< Updated upstream
 
   Serial.println("BEGIN");
   
   int* pins = new int[3]{A0, A1, A2};
-=======
   int* music_pins = new int[1]{5};
->>>>>>> Stashed changes
 
   player = MusicPlayer(music_pins, 1);
 
@@ -56,9 +44,7 @@ void setup() {
 void setTone(uint8_t generator, float voltage)
 {
   analogWrite(generator, voltage/5.f*255.f);
-=======
   player.test();
->>>>>>> Stashed changes
 }
 
 double roundToNearest(double v, double base)
