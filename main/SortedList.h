@@ -1,21 +1,30 @@
 #pragma once
 
+/// @brief function signature, for the comparer function, used when sorting the datatype T, in SortedList
+// < 0 = target is less than other
+// == 0 = target is equal to other
+// > 0 = target is greater than other.
 template<typename T>
-using Comparer = int(*)(const T& target, const T& other);
+using Comparer = long(*)(const T& target, const T& other);
 
+/// @brief contains a sorted list of elements of datatype T
+/// must be reconstructed, if elements are to be removed.
 template<typename T>
 class SortedList
 {
 public:
+	/// @param capacity how much initial memory to allocate
+	/// @param comparer_function what function to use, when comparing elements
 	SortedList(unsigned int capacity, Comparer<T> comparer_function)
 		: m_capacity(capacity), m_comparer(comparer_function)
 	{
-    if(capacity == 0)
-      Serial.println("CAPACITY MUST BE GREATER THAN 0!!!");
+		if(capacity == 0)
+			Serial.println("CAPACITY MUST BE GREATER THAN 0!!!");
 
 		m_data = new T[m_capacity];
 	}
 
+	/// @brief adds the element into the list, whilst making sure there is enough memory to store the new element, and that it is inserted at a sorted position.
 	void add(const T& data)
 	{
 		m_size++;
@@ -24,6 +33,7 @@ public:
 
 		if (m_size > m_capacity)
 		{
+			// copy the old buffer into the new larger buffer, store the old buffer in a temporary, and delete it, after the buffers have been swapped.
 			T* larger_data = new T[m_capacity * 2];
 
 			memcpy(larger_data, m_data, m_capacity * sizeof(T));
@@ -37,9 +47,20 @@ public:
 			m_capacity *= 2;
 		}
 
+		// inserts data into the current memory buffer, using binary search, to find its target index.
 		insert(data);
 	}
 
+	/// @brief same as data()[indx]
+	T& operator [](unsigned int indx)
+	{ 
+		return data()[indx];
+	}
+
+	/// @brief returns the current buffer, that stored the sorted elements.
+	/// may be deleted, if add() is called after it has been accessed.
+	/// therefore the return value, should not be stored for long term usage.
+	/// use size(), to get the size of the data array.
 	T* data()
 	{
 		return m_data;
@@ -68,12 +89,11 @@ protected:
 		while (low_indx < high_indx)
 		{
 			unsigned int middle_indx = (high_indx + low_indx) / 2;
-			int compared = m_comparer(data, m_data[middle_indx]);
+			long compared = m_comparer(data, m_data[middle_indx]);
 
 			if (compared < 0)
 			{
 				high_indx = middle_indx;
-				//target_indx = high_indx;
 			}
 			else
 			{
@@ -81,13 +101,14 @@ protected:
 			}
 		}
 
-		unsigned int target_indx = high_indx;
+		// the high_indx will be the target index of the insert operation.
 
-		if(target_indx != m_size - 1)
+		// only perform the insert operation, if elements need to be moved around.
+		if(high_indx != m_size - 1)
 			// insert the index at the given position, by first shifting everything to the left of the insert index, 1 element to the right
-			memcpy(m_data + target_indx + 1, m_data + target_indx, (m_size - target_indx - 1) * sizeof(T));
+			memcpy(m_data + high_indx + 1, m_data + high_indx, (m_size - high_indx - 1) * sizeof(T));
 
-		m_data[target_indx] = data;
+		m_data[high_indx] = data;
 	}
 
 	unsigned int m_size = 0;

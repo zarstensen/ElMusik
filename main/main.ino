@@ -1,14 +1,30 @@
 #include "ADInput.h"
 #include "SortedList.h"
 
+struct RNote
+{
+  unsigned long time;
+  int device;
+};
+
 ADInput input;
 
-int compareInt(const int& target, const int& other)
+
+long compareInt(const int& target, const int& other)
 {
     return target - other;
 }
 
+long compareRNote(const RNote& target, const RNote& other)
+{
+  return target.time - other.time;
+}
+
+SortedList<RNote> recording = SortedList<RNote>(100, compareRNote);
+
+
 void setup() {
+
   Serial.begin(9600);
 
   delay(1000);
@@ -17,28 +33,11 @@ void setup() {
   
   int* pins = new int[3]{A0, A1, A2};
 
-  input = ADInput(3, pins, 6, 1, 0.01, 10);
+  input = ADInput(3, pins, 6, 1, 0.01, 20);
   input.setPressedCallback(key);
 
   pinMode(5, OUTPUT);
   TCCR0B &= 0b00000000 | 0b00000001;
-
-  SortedList<int> l = SortedList<int>(0, compareInt);
-
-  l.add(25);
-  l.add(500);
-  l.add(10);
-  l.add(-1);
-
-  Serial.println(l.size());
-
-  for (int i = 0; i < l.size(); i++)
-  {
-    Serial.print(i);
-    Serial.println(':');
-    Serial.println(l.data()[i]);
-  }
-
 }
 
 void setTone(uint8_t generator, float voltage)
@@ -51,17 +50,28 @@ double roundToNearest(double v, double base)
   return round(v * 1/base) * base;
 }
 
-void key(int device, bool pressed)
+void key(int device, bool pressed, void* _)
 {
   Serial.print("BUTTON ");
   Serial.print(device);
   Serial.println(pressed ? " DOWN" : " UP");
   Serial.println();
 
-  if(pressed)
-    setTone(5, ((12 - device) / 12.) * 5);
-  else
-    setTone(5, 5);
+  if(device != 13)
+  {
+    RNote note = RNote { millis(), device };
+
+    recording.add(RNote { millis(), device });
+  }
+  else if(pressed)
+  {
+    for(int i = 0; i < recording.size(); i++)
+    {
+      // Serial.print(recording.data()[i].time);
+      // Serial.print(':');
+      Serial.println(recording.data()[i].device);
+    }
+  }
 }
 
 void loop() {
