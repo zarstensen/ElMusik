@@ -2,15 +2,31 @@
 #include "SortedList.h"
 #include "MusicPlayer.h"
 
+struct RNote
+{
+  unsigned long time;
+  int device;
+};
+
 ADInput input;
 MusicPlayer player;
 
-int compareInt(const int& target, const int& other)
+
+long compareInt(const int& target, const int& other)
 {
     return target - other;
 }
 
+long compareRNote(const RNote& target, const RNote& other)
+{
+  return target.time - other.time;
+}
+
+SortedList<RNote> recording = SortedList<RNote>(100, compareRNote);
+
+
 void setup() {
+
   Serial.begin(9600);
 
   delay(1000);
@@ -54,12 +70,28 @@ double roundToNearest(double v, double base)
   return round(v * 1/base) * base;
 }
 
-void key(int device, bool pressed)
+void key(int device, bool pressed, void* _)
 {
   Serial.print("BUTTON ");
   Serial.print(device);
   Serial.println(pressed ? " DOWN" : " UP");
   Serial.println();
+
+  if(device != 13)
+  {
+    RNote note = RNote { millis(), device };
+
+    recording.add(RNote { millis(), device });
+  }
+  else if(pressed)
+  {
+    for(int i = 0; i < recording.size(); i++)
+    {
+      // Serial.print(recording.data()[i].time);
+      // Serial.print(':');
+      Serial.println(recording.data()[i].device);
+    }
+  }
 }
 
 void loop() {
