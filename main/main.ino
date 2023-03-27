@@ -28,6 +28,7 @@ void setup() {
   Serial.println("BEGIN");
   
   int* pins = new int[3]{A0, A1, A2};
+=======
   int* music_pins = new int[1]{5};
 
   player = MusicPlayer(music_pins, 1);
@@ -38,14 +39,30 @@ void setup() {
   input.setPressedCallback(key);
 
   pinMode(5, OUTPUT);
-  TCCR0B &= 0b00000000 | 0b00000001;
-}
 
+  SortedList<int> l = SortedList<int>(0, compareInt);
+
+  l.add(25);
+  l.add(500);
+  l.add(10);
+  l.add(-1);
+
+  Serial.println(l.size());
+
+  for (int i = 0; i < l.size(); i++)
+  {
+    Serial.print(i);
+    Serial.println(':');
+    Serial.println(l.data()[i]);
+  }
 void setTone(uint8_t generator, float voltage)
 {
   analogWrite(generator, voltage/5.f*255.f);
+=======
   player.test();
 }
+
+
 
 double roundToNearest(double v, double base)
 {
