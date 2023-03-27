@@ -6,7 +6,10 @@
 class MusicPlayer
 {
 public:
-    musicPlayer(int* pins, int pin_count)
+  MusicPlayer(){}
+
+
+    MusicPlayer(int* pins, int pin_count)
         : m_pins(pins), m_pin_count(pin_count)
     {
         TCCR0B &= 0b00000000 | 0b00000001;
@@ -14,12 +17,17 @@ public:
 
     void test()
     {
-      Notes* notes = new Notes[37] {C3, CS3, D3, DS3, E3, F3, FS3, G3, GS3, A3, AS3, B3, C4, CS4, D4, DS4, E4, F4, FS4, G4, GS4, A4, AS4, B4, C5, CS5, D5, DS5, E5, F5, FS5, G5, GS5, A5, AS5, B5, C6}
-
-      for (int i = 0; i < 37; i++)
+      Notes* notes = new Notes[37] {Notes::C3, Notes::CS3, Notes::D3, Notes::DS3, Notes::E3, Notes::F3, Notes::FS3, Notes::G3, Notes::GS3, Notes::A3, Notes::AS3, Notes::B3, Notes::C4, Notes::CS4, Notes::D4, Notes::DS4, Notes::E4, Notes::F4, Notes::FS4, Notes::G4, Notes::GS4, Notes::A4, Notes::AS4, Notes::B4, Notes::C5, Notes::CS5, Notes::D5, Notes::DS5, Notes::E5, Notes::F5, Notes::FS5, Notes::G5, Notes::GS5, Notes::A5, Notes::AS5, Notes::B5, Notes::C6};
+      Notes* better_notes = new Notes[8] {Notes::C5, Notes::D5, Notes::E5, Notes::F5, Notes::G5, Notes::A5, Notes::B5, Notes::C6};
+      while (true)
       {
-        delay(32* 500);
-        setTone(5, notes[i]);
+      for (int i = 0; i < 8; i++)
+      {
+        delay(32* 2500);
+        setTone(5, better_notes[i]);
+      }
+        delay(32* 1000);
+
       }
     }
 
@@ -32,6 +40,6 @@ protected:
 
     void setTone(uint8_t generator, Notes voltage)
     {
-        analogWrite(generator, (float)(voltage)/5.f*255.f);
+        analogWrite(generator, ((float)voltage / 1000.0)/5.f*255.f);
     }
 };
