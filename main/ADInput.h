@@ -1,9 +1,9 @@
 #pragma once
 
-// void* = user data, passed when setting the callback
 // int = the device that was toggled
 // bool = the down state of the device, after the toggle
-using KeyCallback = void(*)(void*, int, bool);
+// void* = user data, passed when setting the callback
+using KeyCallback = void(*)(int, bool, void*);
 
 // class responsible for handling multiplexed inputs, via. the analog input pints
 class ADInput
@@ -82,7 +82,9 @@ public:
 			  setBitmap(m_toggled, i, true);
           
 			  if(m_callback != nullptr)
-				m_callback(i, isDown(i), m_user_data);
+        {
+				  m_callback(i, isDown(i), m_user_data);
+        }
 			}
 			else
 			  setBitmap(m_toggled, i, false);
@@ -106,7 +108,7 @@ public:
 
 	/// @brief sets a callback, that will be called, any time a device is toggled.
 	/// @param callback 
-	void setPressedCallback(KeyCallback callback, void* user_data = nullptr)
+	void setKeyCallback(KeyCallback callback, void* user_data = nullptr)
 	{
 		m_callback = callback;
     m_user_data = user_data;

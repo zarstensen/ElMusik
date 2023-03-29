@@ -15,14 +15,24 @@ class SortedList
 public:
 	/// @param capacity how much initial memory to allocate
 	/// @param comparer_function what function to use, when comparing elements
-	SortedList(unsigned int capacity, Comparer<T> comparer_function)
-		: m_capacity(capacity), m_comparer(comparer_function)
-	{
-		if(capacity == 0)
-			Serial.println("CAPACITY MUST BE GREATER THAN 0!!!");
+	SortedList(Comparer<T> comparer_function)
+		: m_comparer(comparer_function), m_data(nullptr) {}
+  
+  ~SortedList()
+  {
+    delete[] m_data;
+  }
 
-		m_data = new T[m_capacity];
-	}
+  void clear(unsigned int new_capacity)
+  {
+    if(m_data != nullptr)
+      delete[] m_data;
+
+    m_size = 0;
+    m_capacity = new_capacity;
+
+    m_data = new T[m_capacity];
+  }
 
 	/// @brief adds the element into the list, whilst making sure there is enough memory to store the new element, and that it is inserted at a sorted position.
 	void add(const T& data)
@@ -33,16 +43,45 @@ public:
 
 		if (m_size > m_capacity)
 		{
+    #if DEB_SORTED_LIST
+      Serial.print("CAPACITY: ");
+      Serial.println(m_capacity);
+    #endif
 			// copy the old buffer into the new larger buffer, store the old buffer in a temporary, and delete it, after the buffers have been swapped.
+     
 			T* larger_data = new T[m_capacity * 2];
 
-			memcpy(larger_data, m_data, m_capacity * sizeof(T));
+    #if DEB_SORTED_LIST
+      Serial.print("PREV_POINTER: ");
+      Serial.println((size_t)m_data);
+      Serial.print("NEW_POINTER: ");
+      Serial.println((size_t)larger_data);
+    #endif
 
-			T* tmp = m_data;
+      memcpy(larger_data, m_data, (m_capacity) * sizeof(T));
+    #if DEB_SORTED_LIST
+      Serial.print("FIRST ELEMENT OF NEW DATA: ");
+      Serial.println(larger_data[0].device);
+      Serial.println(larger_data[0].time);
+      Serial.println("==========================");
+
+      Serial.println((size_t)larger_data);
+    #endif
+
+      delete[] m_data;
+
+    #if DEB_SORTED_LIST
+      Serial.print("FIRST ELEMENT OF NEW DATA AFTER DELETE: ");
+      Serial.println(larger_data[0].device);
+      Serial.println(larger_data[0].time);
+      Serial.println("==========================");
+    #endif
 
 			m_data = larger_data;
-
-			delete[] tmp;
+    
+    #if DEB_SORTED_LIST
+      Serial.println((size_t)m_data);
+    #endif
 
 			m_capacity *= 2;
 		}
@@ -104,10 +143,12 @@ protected:
 		// the high_indx will be the target index of the insert operation.
 
 		// only perform the insert operation, if elements need to be moved around.
-		if(high_indx != m_size - 1)
-			// insert the index at the given position, by first shifting everything to the left of the insert index, 1 element to the right
-			memcpy(m_data + high_indx + 1, m_data + high_indx, (m_size - high_indx - 1) * sizeof(T));
-
+		if(high_indx + 1 != m_size)
+    {
+    	// insert the index at the given position, by first shifting everything to the left of the insert index, 1 element to the right
+			memmove(&m_data[high_indx + 1], &m_data[high_indx], (m_size - high_indx - 1) * sizeof(T));
+    }
+    
 		m_data[high_indx] = data;
 	}
 

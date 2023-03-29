@@ -1,34 +1,30 @@
 #include "ADInput.h"
 #include "SortedList.h"
 #include "MusicPlayer.h"
+#include "Recorder.h"
 
-struct RNote
-{
-  unsigned long time;
-  int device;
-};
+
 
 ADInput input;
+Recorder recorder;
 MusicPlayer player;
 
-long compareRNote(const RNote& target, const RNote& other)
+void setTone(uint8_t generator, float voltage)
 {
-  return target.time - other.time;
+  analogWrite(generator, voltage/5.f*255.f);
+  player.test();
 }
-
-SortedList<RNote> recording = SortedList<RNote>(100, compareRNote);
 
 
 void setup() {
-
   Serial.begin(9600);
 
-  delay(1000);
+  delay(2000);
 
   Serial.println("BEGIN");
+  Serial.println(sizeof(short));
   
   int* pins = new int[3]{A0, A1, A2};
-=======
   int* music_pins = new int[1]{5};
 
   player = MusicPlayer(music_pins, 1);
@@ -36,66 +32,37 @@ void setup() {
   int* analog_pins = new int[3]{A0, A1, A2};
 
   input = ADInput(3, analog_pins, 6, 1, 0.01, 10);
-  input.setPressedCallback(key);
+
+  recorder = Recorder(13, 13, 14, 15, 16);
+  
+  recorder.setupCallback(input);
+
+  Serial.println("OUTER THIS: ");
+  Serial.print((size_t)&recorder);
+
+  Serial.println(sizeof(recorder));
 
   pinMode(5, OUTPUT);
 
-  SortedList<int> l = SortedList<int>(0, compareInt);
+  recorder.begin();
 
-  l.add(25);
-  l.add(500);
-  l.add(10);
-  l.add(-1);
+  // SortedList<RNote> slist = SortedList<RNote>(1, [](const RNote& a, const RNote& b) -> long { return a.time - b.time; });
 
-  Serial.println(l.size());
+  // slist.add(RNote{67237, 0});
+  // slist.add(RNote{67348, 0});
 
-  for (int i = 0; i < l.size(); i++)
-  {
-    Serial.print(i);
-    Serial.println(':');
-    Serial.println(l.data()[i]);
-  }
-void setTone(uint8_t generator, float voltage)
-{
-  analogWrite(generator, voltage/5.f*255.f);
-=======
-  player.test();
-}
+  // for(int i = 0; i < slist.size(); i++)
+  // {
+  //   Serial.print(slist[i].device);
+  //   Serial.print(':');
+  //   Serial.println(slist[i].time);
+  // }
 
-
-
-double roundToNearest(double v, double base)
-{
-  return round(v * 1/base) * base;
-}
-
-void key(int device, bool pressed, void* _)
-{
-  Serial.print("BUTTON ");
-  Serial.print(device);
-  Serial.println(pressed ? " DOWN" : " UP");
-  Serial.println();
-
-  if(device != 13)
-  {
-    RNote note = RNote { millis(), device };
-
-    recording.add(RNote { millis(), device });
-  }
-  else if(pressed)
-  {
-    for(int i = 0; i < recording.size(); i++)
-    {
-      // Serial.print(recording.data()[i].time);
-      // Serial.print(':');
-      Serial.println(recording.data()[i].device);
-    }
-  }
 }
 
 void loop() {
-
   input.poll();
+  recorder.loop();
 
   // double v = 0.5;
   // double target_v = roundToNearest((analogRead(A0)/1024.) * 2 - 0.5, 0.01953125);
