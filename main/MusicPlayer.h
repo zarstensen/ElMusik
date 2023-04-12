@@ -31,6 +31,15 @@ public:
       }
     }
 
+    void multiTest()
+    {
+      setTone(11, Notes::C4);
+      setTone(10, Notes::E4);
+      setTone(9, Notes::G4);
+      setTone(5, Notes::C3);
+      setTone(3, Notes::C3);
+    }    
+
     
 
 protected:

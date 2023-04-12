@@ -46,18 +46,41 @@ void setup() {
 
   recorder.begin();
 
-  // SortedList<RNote> slist = SortedList<RNote>(1, [](const RNote& a, const RNote& b) -> long { return a.time - b.time; });
 
-  // slist.add(RNote{67237, 0});
-  // slist.add(RNote{67348, 0});
 
-  // for(int i = 0; i < slist.size(); i++)
-  // {
-  //   Serial.print(slist[i].device);
-  //   Serial.print(':');
-  //   Serial.println(slist[i].time);
-  // }
 
+
+  player.multiTest();
+}
+
+
+double roundToNearest(double v, double base)
+{
+  return round(v * 1/base) * base;
+}
+
+void key(int device, bool pressed, void* _)
+{
+  Serial.print("BUTTON ");
+  Serial.print(device);
+  Serial.println(pressed ? " DOWN" : " UP");
+  Serial.println();
+
+  if(device != 13)
+  {
+    RNote note = RNote { millis(), device };
+
+    recording.add(RNote { millis(), device });
+  }
+  else if(pressed)
+  {
+    for(int i = 0; i < recording.size(); i++)
+    {
+      // Serial.print(recording.data()[i].time);
+      // Serial.print(':');
+      Serial.println(recording.data()[i].device);
+    }
+  }
 }
 
 void loop() {
