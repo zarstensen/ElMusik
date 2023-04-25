@@ -17,6 +17,8 @@ void setTone(uint8_t generator, float voltage)
 
 
 void setup() {
+  pinMode(13, OUTPUT);
+  pinMode(12, OUTPUT);
   Serial.begin(9600);
 
   delay(2000);
@@ -33,18 +35,15 @@ void setup() {
 
   input = ADInput(3, analog_pins, 6, 1, 0.01, 10);
 
-  recorder = Recorder(13, 13, 14, 15, 16);
+  recorder = Recorder(13, 13, 14, 37, 15, 16, 17);
   
   recorder.setupCallback(input);
-
-  Serial.println("OUTER THIS: ");
-  Serial.print((size_t)&recorder);
-
-  Serial.println(sizeof(recorder));
 
   pinMode(5, OUTPUT);
 
   recorder.begin();
+
+  
 
   // SortedList<RNote> slist = SortedList<RNote>(1, [](const RNote& a, const RNote& b) -> long { return a.time - b.time; });
 
@@ -63,6 +62,8 @@ void setup() {
 void loop() {
   input.poll();
   recorder.loop();
+
+  digitalWrite(13, recorder.displayBeat());
 
   // double v = 0.5;
   // double target_v = roundToNearest((analogRead(A0)/1024.) * 2 - 0.5, 0.01953125);

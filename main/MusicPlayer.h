@@ -12,7 +12,7 @@ public:
     MusicPlayer(int* pins, int pin_count)
         : m_pins(pins), m_pin_count(pin_count)
     {
-        TCCR0B &= 0b00000000 | 0b00000001;
+        TCCR0B &= 0b00000001;
     }
 
     void test()
