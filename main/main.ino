@@ -22,14 +22,14 @@ void setup() {
   Serial.begin(9600);
 
   delay(2000);
-
+/*
   Serial.println("BEGIN");
   Serial.println(sizeof(short));
+  */
   
-  int* pins = new int[3]{A0, A1, A2};
-  int* music_pins = new int[1]{5};
+  int* music_pins = new int[5]{11, 10, 9, 6, 5};
 
-  player = MusicPlayer(music_pins, 1);
+  player = MusicPlayer(music_pins, 5, 8, 7, 2);
 
   int* analog_pins = new int[3]{A0, A1, A2};
 
@@ -45,23 +45,24 @@ void setup() {
 
   
 
-  // SortedList<RNote> slist = SortedList<RNote>(1, [](const RNote& a, const RNote& b) -> long { return a.time - b.time; });
 
-  // slist.add(RNote{67237, 0});
-  // slist.add(RNote{67348, 0});
 
-  // for(int i = 0; i < slist.size(); i++)
-  // {
-  //   Serial.print(slist[i].device);
-  //   Serial.print(':');
-  //   Serial.println(slist[i].time);
-  // }
 
+
+  player.multiTest();
 }
 
+
+double roundToNearest(double v, double base)
+{
+  return round(v * 1/base) * base;
+}
+
+
+
 void loop() {
-  input.poll();
-  recorder.loop();
+  // input.poll();
+  // recorder.loop();
 
   digitalWrite(13, recorder.displayBeat());
 
