@@ -9,10 +9,21 @@ public:
   MusicPlayer(){}
 
 
-    MusicPlayer(int* pins, int pin_count)
-        : m_pins(pins), m_pin_count(pin_count)
+    MusicPlayer(int* pins, int pin_count, int data_pin, int clock_pin, int latch_pin)
+        : m_pins(pins), m_pin_count(pin_count), m_data_pin(data_pin), m_clock_pin(clock_pin), m_latch_pin(latch_pin)
     {
-        TCCR0B &= 0b00000000 | 0b00000001;
+      m_active_pins = 0;
+
+      pinMode(m_data_pin, OUTPUT);
+      pinMode(m_clock_pin, OUTPUT);
+      pinMode(m_latch_pin, OUTPUT);
+
+      memset(m_active_pins, false, pin_count);
+      digitalWrite(m_latch_pin, LOW);
+      shiftOut(m_data_pin, m_clock_pin, MSBFIRST, m_active_pins);
+      digitalWrite(m_latch_pin, HIGH);
+      
+      TCCR0B &= 0b00000000 | 0b00000001;
     }
 
     void test()
@@ -24,7 +35,7 @@ public:
       for (int i = 0; i < 8; i++)
       {
         delay(32* 2500);
-        setTone(5, better_notes[i]);
+        setTone(0, better_notes[i]);
       }
         delay(32* 1000);
 
@@ -33,22 +44,42 @@ public:
 
     void multiTest()
     {
-      setTone(11, Notes::C4);
-      setTone(10, Notes::E4);
-      setTone(9, Notes::G4);
-      setTone(5, Notes::C3);
-      setTone(3, Notes::C3);
-    }    
+      setTone(0, Notes::A4);
+      setTone(1, Notes::C5);
+      setTone(2, Notes::G5);
+      setTone(3, Notes::B5);
+      setTone(4, Notes::OFF);
+
+          
+  }    
 
     
 
 protected:
 
+    int m_data_pin;
+    int m_clock_pin;
+    int m_latch_pin;
+
     int* m_pins;
     int m_pin_count;
 
-    void setTone(uint8_t generator, Notes voltage)
+    byte m_active_pins;    
+
+    void setTone(uint8_t generator_index, Notes voltage)
     {
-        analogWrite(generator, ((float)voltage / 1000.0)/5.f*255.f);
+      if (voltage != Notes::OFF)
+      {
+        m_active_pins |= 1 << generator_index;
+        analogWrite(m_pins[generator_index], (NOTES_TO_VOLT[(int)voltage])/5.f*255.f);
+      }  
+      else
+      {
+        m_active_pins &= ~(1 << generator_index);
+      }
+      digitalWrite(m_latch_pin, LOW);
+      Serial.println(m_active_pins);
+      shiftOut(m_data_pin, m_clock_pin, MSBFIRST, m_active_pins);
+      digitalWrite(m_latch_pin, HIGH);
     }
 };
