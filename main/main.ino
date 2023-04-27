@@ -41,15 +41,9 @@ void setup() {
 
   pinMode(5, OUTPUT);
 
+  recorder.music_player = &player;
+
   recorder.begin();
-
-  
-
-
-
-
-
-  player.test();
 }
 
 
@@ -61,10 +55,10 @@ double roundToNearest(double v, double base)
 
 
 void loop() {
-  // input.poll();
-  // recorder.loop();
+  input.poll();
+  recorder.loop();
 
-  //digitalWrite(13, recorder.displayBeat());
+  digitalWrite(13, recorder.displayBeat());
 
   // double v = 0.5;
   // double target_v = roundToNearest((analogRead(A0)/1024.) * 2 - 0.5, 0.01953125);

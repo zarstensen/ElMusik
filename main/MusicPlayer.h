@@ -52,10 +52,10 @@ public:
       if (generator_index == -1)
         return;
 
-      Serial.print("turned on tone: ");
-      Serial.print((int)note);
-      Serial.print(" in generator: ");
-      Serial.println(generator_index);
+      // Serial.print("turned on tone: ");
+      // Serial.print((int)note);
+      // Serial.print(" in generator: ");
+      // Serial.println(generator_index);
       m_active_tones[generator_index] = note;
       m_active_pins |= 1 << generator_index;        
       analogWrite(m_pins[generator_index], (NOTES_TO_VOLT[(int)note])/5.f*255.f);
@@ -66,16 +66,16 @@ public:
       if (generator_index == -1)
         return;
 
-      Serial.print("turned off tone: ");
-      Serial.print((int)note);
-      Serial.print(" in generator: ");
-      Serial.println(generator_index);
+      // Serial.print("turned off tone: ");
+      // Serial.print((int)note);
+      // Serial.print(" in generator: ");
+      // Serial.println(generator_index);
 
       m_active_tones[generator_index] = Notes::OFF;
       m_active_pins &= ~(1 << generator_index);
     }
-    Serial.print("active pins: ");
-    Serial.println(m_active_pins);
+    // Serial.print("active pins: ");
+    // Serial.println(m_active_pins);
     digitalWrite(m_latch_pin, LOW);
     shiftOut(m_data_pin, m_clock_pin, LSBFIRST, ~m_active_pins);
     digitalWrite(m_latch_pin, HIGH);
@@ -93,7 +93,7 @@ protected:
 
     byte m_active_pins;  
 
-    static constexpr int GENERATOR_COUNT = 2;
+    static constexpr int GENERATOR_COUNT = 5;
     Notes m_active_tones[GENERATOR_COUNT];
     
 

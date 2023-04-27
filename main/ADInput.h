@@ -146,6 +146,9 @@ protected:
 
 		// only poll down state, if the target val has been stable for x iterations
 
+    // if(pin_indx == 2)
+    //   Serial.println(target_val);
+
 		if(abs(target_val - m_prev_voltages[pin_indx]) < m_repeat_margin)
 		  m_stable_iterations[pin_indx]++;
 		else

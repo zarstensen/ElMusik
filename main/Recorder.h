@@ -22,6 +22,7 @@ struct RNote
 class Recorder
 {
 public:
+
   // key callback, subscribed to the ADInputs key callback.
   // the user data is equal to the current Recorder instance.
   static void s_KeyCallback(int device, bool is_down, void* recorder)
@@ -29,6 +30,8 @@ public:
     ((Recorder*)recorder)->keyCallback(device, is_down);
   }
   
+  MusicPlayer* music_player;
+
   Recorder() {}
 
   /// @brief 
@@ -183,9 +186,6 @@ public:
 
     while(m_recording_indx < m_recording.size() && m_recording[m_recording_indx].time < current_time)
     {
-      Serial.print("DEVICE: ");
-      Serial.println(m_recording[m_recording_indx].device);
-
       sendNote(m_recording[m_recording_indx].device, m_recording[m_recording_indx].is_down);
 
       m_recording_indx++;
@@ -203,8 +203,6 @@ public:
   /// check isRecording, to see the state of recording.
   void toggleRecording(unsigned long time)
   {
-    Serial.println("TOGGLE");
-
     if(!m_is_recording)
     {
       if(m_recording_span == -1)
@@ -220,7 +218,7 @@ public:
 
   void sendNote(int device, bool is_down)
   {
-    // TODO: send note code
+    music_player->setTone(is_down, (Notes)device);
   }
 
   /// @brief 
@@ -258,16 +256,16 @@ protected:
 
     unsigned long beatDuration() { return ((60ULL * 1000ULL) / ((unsigned long)getBpm())) * 64; }
 
-  int m_keyboard_range;
-  int m_record_device;
-  int m_clear_device;
-  int m_octave_down_device;
-  int m_octave_up_device;
-  int m_toggle_bpm_device;
-  int m_note_range;
-  int m_octave_offset;
+  int m_keyboard_range = 0;
+  int m_record_device = 0;
+  int m_clear_device = 0;
+  int m_octave_down_device = 0;
+  int m_octave_up_device = 0;
+  int m_toggle_bpm_device = 0;
+  int m_note_range = 0;
+  int m_octave_offset = 0;
 
-  int m_bpm;
+  int m_bpm = 0;
 
   int m_beats_pr_measure = 4;
 
