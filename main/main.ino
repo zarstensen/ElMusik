@@ -29,7 +29,7 @@ void setup() {
   
   int* music_pins = new int[5]{11, 10, 9, 6, 5};
 
-  player = MusicPlayer(music_pins, 5, 8, 7, 2);
+  player = MusicPlayer(music_pins, 5, 8, 2, 7);
 
   int* analog_pins = new int[3]{A0, A1, A2};
 
@@ -49,7 +49,7 @@ void setup() {
 
 
 
-  player.multiTest();
+  player.test();
 }
 
 
@@ -64,7 +64,7 @@ void loop() {
   // input.poll();
   // recorder.loop();
 
-  digitalWrite(13, recorder.displayBeat());
+  //digitalWrite(13, recorder.displayBeat());
 
   // double v = 0.5;
   // double target_v = roundToNearest((analogRead(A0)/1024.) * 2 - 0.5, 0.01953125);
