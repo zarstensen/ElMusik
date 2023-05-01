@@ -8,7 +8,7 @@ template<typename T>
 using Comparer = long(*)(const T& target, const T& other);
 
 /// @brief contains a sorted list of elements of datatype T
-/// must be reconstructed, if elements are to be removed.
+/// must be reconstructed or cleared, if elements are to be removed.
 template<typename T>
 class SortedList
 {
@@ -20,13 +20,15 @@ public:
   
   ~SortedList()
   {
-    delete[] m_data;
+	delete[] m_data;
   }
 
+  /// @brief
+  /// clears the internal buffer, and allocates a new one, with the specified size.
   void clear(unsigned int new_capacity)
   {
     if(m_data != nullptr)
-      delete[] m_data;
+		delete[] m_data;
 
     m_size = 0;
     m_capacity = new_capacity;
@@ -34,7 +36,8 @@ public:
     m_data = new T[m_capacity];
   }
 
-	/// @brief adds the element into the list, whilst making sure there is enough memory to store the new element, and that it is inserted at a sorted position.
+	/// @brief adds the element into the list, whilst making sure there is enough memory to store the new element,
+	/// and that it is inserted at a sorted position.
 	void add(const T& data)
 	{
 		m_size++;
@@ -44,43 +47,43 @@ public:
 		if (m_size > m_capacity)
 		{
     #if DEB_SORTED_LIST
-      Serial.print("CAPACITY: ");
-      Serial.println(m_capacity);
+			Serial.print("CAPACITY: ");
+			Serial.println(m_capacity);
     #endif
 			// copy the old buffer into the new larger buffer, store the old buffer in a temporary, and delete it, after the buffers have been swapped.
      
 			T* larger_data = new T[m_capacity * 2];
 
     #if DEB_SORTED_LIST
-      Serial.print("PREV_POINTER: ");
-      Serial.println((size_t)m_data);
-      Serial.print("NEW_POINTER: ");
-      Serial.println((size_t)larger_data);
+			Serial.print("PREV_POINTER: ");
+			Serial.println((size_t)m_data);
+			Serial.print("NEW_POINTER: ");
+			Serial.println((size_t)larger_data);
     #endif
 
-      memcpy(larger_data, m_data, (m_capacity) * sizeof(T));
+			 memcpy(larger_data, m_data, (m_capacity) * sizeof(T));
     #if DEB_SORTED_LIST
-      Serial.print("FIRST ELEMENT OF NEW DATA: ");
-      Serial.println(larger_data[0].device);
-      Serial.println(larger_data[0].time);
-      Serial.println("==========================");
+			Serial.print("FIRST ELEMENT OF NEW DATA: ");
+			Serial.println(larger_data[0].device);
+			Serial.println(larger_data[0].time);
+			Serial.println("==========================");
 
-      Serial.println((size_t)larger_data);
+			Serial.println((size_t)larger_data);
     #endif
 
-      delete[] m_data;
+			delete[] m_data;
 
     #if DEB_SORTED_LIST
-      Serial.print("FIRST ELEMENT OF NEW DATA AFTER DELETE: ");
-      Serial.println(larger_data[0].device);
-      Serial.println(larger_data[0].time);
-      Serial.println("==========================");
+			Serial.print("FIRST ELEMENT OF NEW DATA AFTER DELETE: ");
+			Serial.println(larger_data[0].device);
+			Serial.println(larger_data[0].time);
+			Serial.println("==========================");
     #endif
 
 			m_data = larger_data;
     
     #if DEB_SORTED_LIST
-      Serial.println((size_t)m_data);
+			Serial.println((size_t)m_data);
     #endif
 
 			m_capacity *= 2;
