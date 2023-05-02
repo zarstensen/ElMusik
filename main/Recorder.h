@@ -54,7 +54,7 @@ public:
   /// @param toggle_bpm_device
   /// ADInput device index, for toggeling between predefined BPM values.
   /// 
-  Recorder(int keyboard_range, int record_device, int clear_device, int note_range, int octave_down_device, int octave_up_device, int toggle_bpm_device, int bpm = 120)
+  Recorder(int keyboard_range, int record_device, int clear_device, int note_range, int octave_down_device, int octave_up_device, int toggle_bpm_device, int bpm = 60)
   : m_keyboard_range(keyboard_range), m_record_device(record_device), m_clear_device(clear_device), m_note_range(note_range), m_octave_down_device(octave_down_device), m_octave_up_device(octave_up_device), m_toggle_bpm_device(toggle_bpm_device), m_bpm(bpm)
   {
     Serial.println(getBpm());
@@ -103,7 +103,8 @@ public:
     m_recording_span = -1;
     m_recording_start = 0;
     m_prev_time = millis();
-    m_is_recording = false;  
+    m_is_recording = false;
+    music_player->clearGenerators();
   }
 
   /// @brief setsup the key callback from the given ADInput
@@ -118,10 +119,12 @@ public:
   /// @param is_down 
   void keyCallback(int device, bool is_down)
   {
+
     // if the device is inside the keyboard range, record the key event.
     if(device < m_keyboard_range)
     {
       int note = device + m_octave_offset;
+      Serial.println(note);
 
       if(m_is_recording)
       {
@@ -179,8 +182,8 @@ public:
     
     if(current_time < m_prev_time)
     {
-       Serial.print("FREE: ");
-       Serial.println(freeRam());
+    //    Serial.print("FREE: ");
+    //    Serial.println(freeRam());
       m_recording_indx = 0;
     }
 
@@ -194,6 +197,11 @@ public:
     m_prev_time = current_time;
   }
 
+  int getOctave()
+  {
+    return m_octave_offset / 12;
+  }
+
   void requestRecordingToggle()
   {
       m_recording_toggle_requested = true;
@@ -203,6 +211,7 @@ public:
   /// check isRecording, to see the state of recording.
   void toggleRecording(unsigned long time)
   {
+    Serial.println("TOGGLE RECORDING");
     if(!m_is_recording)
     {
       if(m_recording_span == -1)
@@ -217,7 +226,12 @@ public:
   }
 
   void sendNote(int device, bool is_down)
-  {
+  {    
+    
+    Serial.print("NOTE: ");
+    Serial.println(device);
+    Serial.print("STATE: ");
+    Serial.println(is_down);
     music_player->setTone(is_down, (Notes)device);
   }
 
@@ -227,10 +241,11 @@ public:
   /// negative = downwards shift.
   void offsetOctave(int offset)
   {
+    Serial.println("OFFSETT");
     m_octave_offset += 12 * offset;
 
     m_octave_offset = min(max(m_octave_offset, 0), m_note_range - m_keyboard_range);
-
+    music_player->clearGenerators();
   }
 
   void toggleBpm()

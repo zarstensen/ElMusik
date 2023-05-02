@@ -2,6 +2,7 @@
 #include "SortedList.h"
 #include "MusicPlayer.h"
 #include "Recorder.h"
+#include "LEDController.h"
 
 
 
@@ -9,37 +10,25 @@ ADInput input;
 Recorder recorder;
 MusicPlayer player;
 
-void setTone(uint8_t generator, float voltage)
-{
-  analogWrite(generator, voltage/5.f*255.f);
-  player.test();
-}
-
-
 void setup() {
-  pinMode(13, OUTPUT);
-  pinMode(12, OUTPUT);
   Serial.begin(9600);
 
-  delay(2000);
-/*
-  Serial.println("BEGIN");
-  Serial.println(sizeof(short));
-  */
+  delay(1000);
   
-  int* music_pins = new int[5]{11, 10, 9, 6, 5};
+  LEDController::setup(11, 13, 12);
+  int* music_pins = new int[5]{6, 5, 3, 10, 9};
 
-  player = MusicPlayer(music_pins, 5, 8, 2, 7);
+  player = MusicPlayer(music_pins, 5, 4, 7, 8);
 
-  int* analog_pins = new int[3]{A0, A1, A2};
+  int* analog_pins = new int[6]{A0, A1, A2, A3, A4, A5};
 
-  input = ADInput(3, analog_pins, 6, 1, 0.01, 10);
+  input = ADInput(6, analog_pins, 3, 1, 0.05, 10);
 
-  recorder = Recorder(13, 13, 14, 37, 15, 16, 17);
+  recorder = Recorder(13, 15, 16, 49, 13, 14, 17);
   
   recorder.setupCallback(input);
 
-  pinMode(5, OUTPUT);
+  pinMode(2, OUTPUT);
 
   recorder.music_player = &player;
 
@@ -55,10 +44,12 @@ double roundToNearest(double v, double base)
 
 
 void loop() {
+  
   input.poll();
   recorder.loop();
+  LEDController::displayDigits(recorder.getOctave(), recorder.getBpm()/10);
 
-  digitalWrite(13, recorder.displayBeat());
+digitalWrite(2, recorder.displayBeat());
 
   // double v = 0.5;
   // double target_v = roundToNearest((analogRead(A0)/1024.) * 2 - 0.5, 0.01953125);

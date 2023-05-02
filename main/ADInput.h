@@ -26,13 +26,8 @@ public:
 	/// @param repeat_count
 	/// how many iterations a voltage must be within the repat_margin, before it is considered valid, and is polled from.
 	ADInput(int analog_count, int* analog_pins, int analog_resolution, int resolution_offset, double repeat_margin, uint8_t repeat_count)
-	{
-		m_analog_pins = analog_pins;
-		m_analog_count = analog_count;
-		m_analog_resolution = analog_resolution;
-		m_repeat_margin = repeat_margin;
-		m_repeat_count = repeat_count;
-
+	  : m_analog_pins(analog_pins), m_analog_count(analog_count), m_analog_resolution(analog_resolution), m_repeat_count(repeat_count), m_repeat_margin(repeat_margin)
+  {
 		// create the reading base, from the resolution offset.
 
 		m_reading_base = 0.5;
@@ -64,7 +59,7 @@ public:
 		memset(m_stable_iterations, m_analog_count * sizeof(uint8_t), 0);
 	}
 
-	poll()
+	void poll()
 	{
 		// store the previous down states, to be used later for detecting toggled inputs.
 		memcpy(m_prev_down, m_down, m_bitmap_length);
@@ -146,7 +141,7 @@ protected:
 
 		// only poll down state, if the target val has been stable for x iterations
 
-    // if(pin_indx == 2)
+    // if(pin_indx == 1)
     //   Serial.println(target_val);
 
 		if(abs(target_val - m_prev_voltages[pin_indx]) < m_repeat_margin)
