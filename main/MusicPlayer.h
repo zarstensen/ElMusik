@@ -12,6 +12,7 @@ public:
   MusicPlayer(int* pins, int pin_count, int data_pin, int latch_pin, int clock_pin)
       : m_pins(pins), m_pin_count(pin_count), m_data_pin(data_pin), m_clock_pin(clock_pin), m_latch_pin(latch_pin), m_active_pins(0)
   {
+    TCCR0B &= 0b00000001;
     pinMode(m_data_pin, OUTPUT);
     pinMode(m_clock_pin, OUTPUT);
     pinMode(m_latch_pin, OUTPUT);
@@ -19,7 +20,6 @@ public:
     clearGenerators();
     
 
-    TCCR0B &= 0b00000001;
   }
 
   void clearGenerators()

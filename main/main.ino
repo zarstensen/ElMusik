@@ -49,6 +49,7 @@ void loop() {
   recorder.loop();
   LEDController::displayDigits(recorder.getOctave(), recorder.getBpm()/10);
 
+
 digitalWrite(2, recorder.displayBeat());
 
   // double v = 0.5;

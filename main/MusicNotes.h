@@ -1,5 +1,5 @@
 
-static float NOTES_TO_PWM0[] =
+static uint8_t NOTES_TO_PWM0[] =
 {
   250, //C3
   249, // C#3
@@ -52,7 +52,7 @@ static float NOTES_TO_PWM0[] =
   91, //C7  
 };
 
-static float NOTES_TO_PWM1[] =
+static uint8_t NOTES_TO_PWM1[] =
 {
   251, //C3
   250, // C#3
@@ -105,7 +105,7 @@ static float NOTES_TO_PWM1[] =
   94, //C7  
 };
 
-static float NOTES_TO_PWM2[] =
+static uint8_t NOTES_TO_PWM2[] =
 {
   251, //C3
   250, // C#3
@@ -158,7 +158,7 @@ static float NOTES_TO_PWM2[] =
   94, //C7  
 };
 
-static float NOTES_TO_PWM3[] =
+static uint8_t NOTES_TO_PWM3[] =
 {
   250, //C3
   249, // C#3
@@ -211,7 +211,7 @@ static float NOTES_TO_PWM3[] =
   89, //C7  
 };
 
-static float NOTES_TO_PWM4[] =
+static uint8_t NOTES_TO_PWM4[] =
 {
   251, //C3
   250, // C#3
@@ -264,9 +264,9 @@ static float NOTES_TO_PWM4[] =
   98, //C7  
 };
 
-static float* NOTES_TO_PWMS[] = {NOTES_TO_PWM0, NOTES_TO_PWM1, NOTES_TO_PWM2, NOTES_TO_PWM3, NOTES_TO_PWM4 };
+static uint8_t* NOTES_TO_PWMS[] = {NOTES_TO_PWM0, NOTES_TO_PWM1, NOTES_TO_PWM2, NOTES_TO_PWM3, NOTES_TO_PWM4 };
 
-enum class Notes
+enum class Notes : uint8_t
 {
     C3 = 0,
     CS3,
