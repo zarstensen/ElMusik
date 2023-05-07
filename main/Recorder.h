@@ -169,11 +169,14 @@ public:
   {
     unsigned long current_time = millis() - m_recording_start;
 
-    if (m_recording_toggle_requested)
+    if (m_recording_toggle_requested && (!m_is_recording || measureTime(current_time) < m_prev_measure_time))
     {
         toggleRecording(current_time);
         m_recording_toggle_requested = false;
     }
+
+    if(m_is_recording)
+      m_prev_measure_time = measureTime(current_time);
 
 
     if(m_recording_span != -1)
@@ -293,6 +296,7 @@ protected:
 
   bool m_is_recording = false;
   bool m_recording_toggle_requested = false;
+  unsigned long m_prev_measure_time = 0;
 
   int BPMS[5] = { 60, 80, 120, 140, 200 };
   int m_current_bpm_indx = 0;
